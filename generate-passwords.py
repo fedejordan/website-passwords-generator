@@ -2,6 +2,7 @@ import argparse
 import urllib.request
 from bs4 import BeautifulSoup
 import io
+import sys
 
 def capture_args():
 	parser = argparse.ArgumentParser(description='Generates random passwords combining words from desired website')
@@ -34,7 +35,6 @@ def get_text_from_url(url):
 	return '\n'.join(chunk for chunk in chunks if chunk)
 
 def get_words(text, min_char):
-	return ["gato", "perro", "raton"]
 	s = io.StringIO(text)
 	words = []
 	for line in s:
@@ -56,6 +56,10 @@ def combinate_words(words, combinations_number, previous_combinations=[]):
 		return combinate_words(words, combinations_number - 1, new_combinations)
 	return new_combinations
 
+def generate_output(list, outputFile):
+	with open(outputFile, 'w') as f:
+		for item in list:
+			f.write("%s\n" % item)
 
 args = capture_args()
 print("Getting text from " + args.url)
@@ -64,4 +68,6 @@ print("Getting possible words...")
 words = get_words(text, args.min_char)
 print("Making combinations...")
 list = combinate_words(words, args.combinations_number)
-print(list)
+print("Generating file with " + str(len(list)) + " combinations. Total " + str(sys.getsizeof(list)) + " bytes")
+generate_output(list, args.output)
+print("Done.")
